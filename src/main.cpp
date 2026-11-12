@@ -5,7 +5,7 @@
 // ---------- Choose which part runs ----------
 // Change this number to the part you are working on, then upload.
 // 3 = potentiometer, 4 = resolution, 5 = sampling, 6 = DAC, 7 = PWM, 8 = RC filter
-#define PART 3
+#define PART 4
 
 // ---------- Pin numbers ----------
 #define POT_PIN    34    // potentiometer wiper (ADC1)
@@ -16,7 +16,7 @@
 
 // ---------- Global variables ----------
 // Part IV – resolution
-const int ADC_BITS = 12;       // try 12, 11, 10 and 9
+const int ADC_BITS = 9;       // try 12, 11, 10 and 9
 
 
 // ---------- Part functions ----------
@@ -39,7 +39,7 @@ void partResolution()
   analogReadResolution(ADC_BITS);           // use ADC_BITS bits
   int raw = analogRead(POT_PIN);
   int maxValue = pow(2, ADC_BITS) - 1;      // largest value: 2^bits – 1
-  float volts = raw * 3.3 / 4095;       // raw value → volts (Key Formulas)
+  float volts = raw * 3.3 / maxValue;       // raw value → volts (Key Formulas)
 
   analogReadResolution(12);                 // analogReadMilliVolts() is always used at 12 bits
   int mv = analogReadMilliVolts(POT_PIN);   // calibrated reading in mV
