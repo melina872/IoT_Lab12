@@ -21,6 +21,14 @@
 // Part III – read the potentiometer and send it to the Serial Plotter
 void partPot()
 {
+  // Read the potentiometer (Common Commands: "Read an Analog Pin").
+  int potValue = analogRead(POT_PIN);
+
+  // Send the value to the Serial Plotter.
+  // A line that starts with > becomes a graph in Teleplot.
+  Serial.print(">pot:");  Serial.println(potValue);
+  delay(50);
+
 }
 
 // Part IV – resolution and voltage
@@ -55,6 +63,8 @@ void setup()
   Serial.println("Lab 11: ADC and DAC");
 
   // ADC settings
+  analogReadResolution(12);            // 12 bits: values 0 – 4095
+  analogSetAttenuation(ADC_11db);      // measure the full 0 – 3.3 V range
 
   // PWM settings
 }
