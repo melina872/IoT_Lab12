@@ -5,7 +5,7 @@
 // ---------- Choose which part runs ----------
 // Change this number to the part you are working on, then upload.
 // 3 = potentiometer, 4 = resolution, 5 = sampling, 6 = DAC, 7 = PWM, 8 = RC filter
-#define PART 6
+#define PART 7
 
 // ---------- Pin numbers ----------
 #define POT_PIN    34    // potentiometer wiper (ADC1)
@@ -30,6 +30,11 @@ const int DAC_VALUE = 128;     // 0 – 255
 const bool DAC_SINE = true;   // false = Step 1, true = Step 2 (sine wave)
 const int SINE_STEPS = 32;     // points in one sine cycle
 const int STEP_DELAY = 30;     // ms between points
+
+// Part VII – PWM
+
+const int PWM_FREQ = 5000;     // PWM frequency (Hz)
+const int PWM_RES = 8;         // 8 bits: duty 0 – 255
 
 
 // ---------- Part functions ----------
@@ -118,6 +123,16 @@ void partDAC()
 // Part VII – PWM: LED brightness follows the potentiometer
 void partPWM()
 {
+  int potValue = analogRead(POT_PIN);
+
+  // Brightness follows the pot (Common Commands: "Scale a Value")
+  int duty = map(potValue, 0, 4095, 0, 255);     // 0 – 4095 → 0 – 255
+  ledcWrite(LED_PIN, duty);                        // set the LED duty
+
+  Serial.print("duty = ");  Serial.print(duty);
+  Serial.print("   duty cycle = ");  Serial.print(duty * 100 / 255);  Serial.println(" %");
+  delay(100);
+
 }
 
 // Part VIII – PWM through an RC filter, read back with the ADC
@@ -134,6 +149,7 @@ void setup()
   // ADC settings
   analogReadResolution(12);            // 12 bits: values 0 – 4095
   analogSetAttenuation(ADC_11db);      // measure the full 0 – 3.3 V range
+  ledcAttach(LED_PIN, PWM_FREQ, PWM_RES);  // core 3: pin, frequency, resolution
 
   // PWM settings
 }
