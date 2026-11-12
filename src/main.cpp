@@ -15,6 +15,8 @@
 #define LED_PIN    18    // PWM: LED and RC filter input
 
 // ---------- Global variables ----------
+// Part IV – resolution
+const int ADC_BITS = 12;       // try 12, 11, 10 and 9
 
 
 // ---------- Part functions ----------
@@ -34,6 +36,20 @@ void partPot()
 // Part IV – resolution and voltage
 void partResolution()
 {
+  analogReadResolution(ADC_BITS);           // use ADC_BITS bits
+  int raw = analogRead(POT_PIN);
+  int maxValue = pow(2, ADC_BITS) - 1;      // largest value: 2^bits – 1
+  float volts = raw * 3.3 / 4095;       // raw value → volts (Key Formulas)
+
+  analogReadResolution(12);                 // analogReadMilliVolts() is always used at 12 bits
+  int mv = analogReadMilliVolts(POT_PIN);   // calibrated reading in mV
+
+  Serial.print("bits = ");          Serial.print(ADC_BITS);
+  Serial.print("   raw = ");        Serial.print(raw);
+  Serial.print("   calculated = "); Serial.print(volts, 3);  Serial.print(" V");
+  Serial.print("   analogReadMilliVolts = ");  Serial.print(mv);  Serial.println(" mV");
+  delay(500);
+
 }
 
 // Part V – sample the signal generator at SAMPLE_RATE
