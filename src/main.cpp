@@ -5,7 +5,7 @@
 // ---------- Choose which part runs ----------
 // Change this number to the part you are working on, then upload.
 // 3 = potentiometer, 4 = resolution, 5 = sampling, 6 = DAC, 7 = PWM, 8 = RC filter
-#define PART 4
+#define PART 6
 
 // ---------- Pin numbers ----------
 #define POT_PIN    34    // potentiometer wiper (ADC1)
@@ -16,8 +16,14 @@
 
 // ---------- Global variables ----------
 // Part IV – resolution
-const int ADC_BITS = 9;       // try 12, 11, 10 and 9
+const int ADC_BITS = 12;       // try 12, 11, 10 and 9
 
+// Part V – sampling
+const unsigned long SAMPLE_RATE = 200;   // samples per second (Hz)
+const unsigned long SAMPLE_PERIOD = 1000000 / SAMPLE_RATE;   // µs between samples
+unsigned long lastSample = 0;   // time of the last sample (µs)
+unsigned long sampleCount = 0;  // samples taken in this second
+unsigned long lastSecond = 0;   // time the count started (ms)
 
 // ---------- Part functions ----------
 // Part III – read the potentiometer and send it to the Serial Plotter
@@ -55,6 +61,23 @@ void partResolution()
 // Part V – sample the signal generator at SAMPLE_RATE
 void partSampling()
 {
+  // Is it time for the next sample? (Common Commands: "Time Passed (µs)")
+  if (micros() - lastSample >= SAMPLE_PERIOD)
+  {
+    lastSample = micros();               // save the time of this sample
+    int value = analogRead(SIG_PIN);     // take one sample
+    Serial.print(">signal:");  Serial.println(value);
+    sampleCount++;                       // count this sample
+  }
+
+  // Once per second, plot how many samples were taken (the real sample rate).
+  if (millis() - lastSecond >= 1000)
+  {
+    lastSecond = millis();
+    Serial.print(">rate:");  Serial.println(sampleCount);
+    sampleCount = 0;
+  }
+
 }
 
 // Part VI – DAC: a fixed voltage, then a slow sine wave read back by the ADC
